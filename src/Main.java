@@ -426,3 +426,55 @@ public class UseCase9ErrorHandlingValidation{
         }
     }
 }
+import java.util.*;
+
+class ReservationUC10{
+
+    String id,name,type;
+    boolean cancelled=false;
+
+    ReservationUC10(String i,String n,String t){
+        id=i;
+        name=n;
+        type=t;
+    }
+}
+
+class CancellationService{
+
+    Map<String,ReservationUC10> reservations;
+    Stack<String> rollback = new Stack<>();
+
+    CancellationService(Map<String,ReservationUC10> r){
+        reservations=r;
+    }
+
+    void cancel(String id){
+
+        ReservationUC10 r = reservations.get(id);
+
+        if(r==null){
+            System.out.println("Reservation not found");
+            return;
+        }
+
+        r.cancelled=true;
+        rollback.push(id);
+
+        System.out.println("Booking cancelled");
+    }
+}
+
+public class UseCase10BookingCancellation{
+
+    public static void main(String[] args){
+
+        Map<String,ReservationUC10> map = new HashMap<>();
+
+        map.put("1",new ReservationUC10("1","Alice","Single"));
+
+        CancellationService service = new CancellationService(map);
+
+        service.cancel("1");
+    }
+}
