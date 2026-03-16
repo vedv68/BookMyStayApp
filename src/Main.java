@@ -381,3 +381,48 @@ public class UseCase8BookingHistoryReport{
         service.generateReport(history.getAll());
     }
 }
+import java.util.*;
+
+class InvalidBookingException extends Exception{
+    InvalidBookingException(String msg){
+        super(msg);
+    }
+}
+
+class RoomInventoryUC9{
+
+    Map<String,Integer> inventory = new HashMap<>();
+
+    RoomInventoryUC9(){
+        inventory.put("Single",5);
+        inventory.put("Double",3);
+        inventory.put("Suite",2);
+    }
+
+    void validate(String type) throws InvalidBookingException{
+        if(!inventory.containsKey(type))
+            throw new InvalidBookingException("Invalid Room Type");
+    }
+}
+
+public class UseCase9ErrorHandlingValidation{
+
+    public static void main(String[] args){
+
+        Scanner sc = new Scanner(System.in);
+        RoomInventoryUC9 inventory = new RoomInventoryUC9();
+
+        try{
+
+            System.out.print("Room Type: ");
+            String type = sc.nextLine();
+
+            inventory.validate(type);
+
+            System.out.println("Booking Valid");
+
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+}
