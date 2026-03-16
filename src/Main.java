@@ -478,3 +478,72 @@ public class UseCase10BookingCancellation{
         service.cancel("1");
     }
 }
+import java.util.*;
+
+class BookingRequest{
+    String guest;
+    String room;
+
+    BookingRequest(String g,String r){
+        guest=g;
+        room=r;
+    }
+}
+
+class RoomInventoryUC11{
+
+    Map<String,Integer> inventory = new HashMap<>();
+
+    RoomInventoryUC11(){
+        inventory.put("Single",2);
+    }
+
+    synchronized void allocate(String room,String guest){
+
+        int available = inventory.get(room);
+
+        if(available>0){
+            inventory.put(room,available-1);
+            System.out.println(Thread.currentThread().getName()+" booked for "+guest);
+        }else{
+            System.out.println("No room for "+guest);
+        }
+    }
+}
+
+class BookingProcessor extends Thread{
+
+    Queue<BookingRequest> queue;
+    RoomInventoryUC11 inventory;
+
+    BookingProcessor(Queue<BookingRequest> q,RoomInventoryUC11 i){
+        queue=q;
+        inventory=i;
+    }
+
+    public void run(){
+
+        while(!queue.isEmpty()){
+
+            BookingRequest r = queue.poll();
+            if(r!=null)
+                inventory.allocate(r.room,r.guest);
+        }
+    }
+}
+
+public class UseCase11ConcurrentBookingSimulation{
+
+    public static void main(String[] args){
+
+        Queue<BookingRequest> queue = new LinkedList<>();
+
+        queue.add(new BookingRequest("Alice","Single"));
+        queue.add(new BookingRequest("Bob","Single"));
+
+        RoomInventoryUC11 inventory = new RoomInventoryUC11();
+
+        new BookingProcessor(queue,inventory).start();
+        new BookingProcessor(queue,inventory).start();
+    }
+}
