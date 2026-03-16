@@ -547,3 +547,93 @@ public class UseCase11ConcurrentBookingSimulation{
         new BookingProcessor(queue,inventory).start();
     }
 }
+import java.io.*;
+        import java.util.*;
+
+class ReservationUC12 implements Serializable{
+
+    String id,name,type;
+
+    ReservationUC12(String i,String n,String t){
+        id=i;
+        name=n;
+        type=t;
+    }
+}
+
+class SystemState implements Serializable{
+
+    Map<String,Integer> inventory;
+    List<ReservationUC12> bookings;
+
+    SystemState(Map<String,Integer> i,List<ReservationUC12> b){
+        inventory=i;
+        bookings=b;
+    }
+}
+
+class PersistenceService{
+
+    private static final String FILE="state.dat";
+
+    void save(SystemState state){
+
+        try{
+            ObjectOutputStream out =
+                    new ObjectOutputStream(new FileOutputStream(FILE));
+
+            out.writeObject(state);
+            out.close();
+
+            System.out.println("State saved");
+        }
+        catch(Exception e){
+            System.out.println("Save error");
+        }
+    }
+
+    SystemState load(){
+
+        try{
+            ObjectInputStream in =
+                    new ObjectInputStream(new FileInputStream(FILE));
+
+            SystemState state = (SystemState) in.readObject();
+            in.close();
+
+            return state;
+        }
+        catch(Exception e){
+            System.out.println("No previous state");
+            return null;
+        }
+    }
+}
+
+public class UseCase12DataPersistenceRecovery{
+
+    public static void main(String[] args){
+
+        PersistenceService service = new PersistenceService();
+
+        Map<String,Integer> inventory = new HashMap<>();
+        List<ReservationUC12> bookings = new ArrayList<>();
+
+        SystemState state = service.load();
+
+        if(state!=null){
+            inventory=state.inventory;
+            bookings=state.bookings;
+        }
+        else{
+            inventory.put("Single",5);
+        }
+
+        bookings.add(new ReservationUC12("1","Alice","Single"));
+        inventory.put("Single",inventory.get("Single")-1);
+
+        service.save(new SystemState(inventory,bookings));
+
+        System.out.println("System running with persistence.");
+    }
+}
