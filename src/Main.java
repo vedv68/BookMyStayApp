@@ -259,3 +259,65 @@ public class UseCase6RoomAllocationService{
         inventory.display();
     }
 }
+import java.util.*;
+
+class Service{
+    String name;
+    double cost;
+
+    Service(String n,double c){
+        name=n;
+        cost=c;
+    }
+}
+
+class AddOnServiceManager{
+
+    private Map<String,List<Service>> reservationServices = new HashMap<>();
+
+    public void addService(String id,Service s){
+        reservationServices.putIfAbsent(id,new ArrayList<>());
+        reservationServices.get(id).add(s);
+        System.out.println(s.name+" added.");
+    }
+
+    public void showServices(String id){
+        List<Service> services = reservationServices.get(id);
+        if(services==null){
+            System.out.println("No services selected.");
+            return;
+        }
+
+        for(Service s:services){
+            System.out.println(s.name+" ₹"+s.cost);
+        }
+    }
+
+    public double calculateCost(String id){
+        List<Service> services = reservationServices.get(id);
+        if(services==null) return 0;
+
+        double total=0;
+        for(Service s:services) total+=s.cost;
+        return total;
+    }
+}
+
+public class UseCase7AddOnServiceSelection{
+
+    public static void main(String[] args){
+
+        Scanner sc = new Scanner(System.in);
+        AddOnServiceManager manager = new AddOnServiceManager();
+
+        System.out.print("Reservation ID: ");
+        String id = sc.nextLine();
+
+        manager.addService(id,new Service("Breakfast",500));
+        manager.addService(id,new Service("Extra Bed",800));
+
+        manager.showServices(id);
+
+        System.out.println("Total Cost ₹"+manager.calculateCost(id));
+    }
+}
