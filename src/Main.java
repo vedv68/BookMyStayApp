@@ -321,3 +321,63 @@ public class UseCase7AddOnServiceSelection{
         System.out.println("Total Cost ₹"+manager.calculateCost(id));
     }
 }
+import java.util.*;
+
+class ReservationUC8{
+
+    String id,name,room;
+    int nights;
+
+    ReservationUC8(String i,String n,String r,int ni){
+        id=i;
+        name=n;
+        room=r;
+        nights=ni;
+    }
+
+    void display(){
+        System.out.println(id+" "+name+" "+room+" "+nights);
+    }
+}
+
+class BookingHistory{
+
+    List<ReservationUC8> history = new ArrayList<>();
+
+    void addReservation(ReservationUC8 r){
+        history.add(r);
+    }
+
+    List<ReservationUC8> getAll(){
+        return history;
+    }
+}
+
+class BookingReportService{
+
+    void generateReport(List<ReservationUC8> list){
+
+        System.out.println("\nBooking Report");
+
+        for(ReservationUC8 r:list){
+            r.display();
+        }
+
+        System.out.println("Total Bookings "+list.size());
+    }
+}
+
+public class UseCase8BookingHistoryReport{
+
+    public static void main(String[] args){
+
+        BookingHistory history = new BookingHistory();
+
+        history.addReservation(new ReservationUC8("1","Alice","Single",2));
+        history.addReservation(new ReservationUC8("2","Bob","Double",3));
+
+        BookingReportService service = new BookingReportService();
+
+        service.generateReport(history.getAll());
+    }
+}
